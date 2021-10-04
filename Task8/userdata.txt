@@ -1,0 +1,30 @@
+private String getUserDataNormalNode() {
+  StringBuilder userData = new StringBuilder();
+  userData.append("#!/bin/bash\n");
+  userData.append("yum -y update\n");
+  userData.append("sudo yum install -y gcc make tcl\n");
+  userData.append("sudo yum groupinstall \"Development Tools\"\n");
+  userData.append("cd /usr/local/src\n");
+  userData.append("sudo wget https://download.redis.io/releases/redis-6.0.9.tar.gz\n");
+  userData.append("sudo tar xzf redis-6.0.9.tar.gz\n");
+  userData.append("cd redis-6.0.9\n");
+  userData.append("sudo make\n");
+  userData.append("sudo cp src/redis-server /usr/local/bin/\n");
+  userData.append("sudo cp src/redis-cli /usr/local/bin/\n");
+  userData.append("echo \"port 6379\nrequirepass " + REDIS_PASSWORD + "\" >> /home/ec2-user/redis-server.cfg\n");
+  userData.append("chown ec2-user:ec2-user /home/ec2-user/redis-server.cfg\n");
+  userData.append("chmod +x /home/ec2-user/redis-server.cfg\n");
+  userData.append("/usr/local/bin/redis-server /home/ec2-user/redis-server.cfg\n");
+  String userDataNew = encodeBase64(userData.toString());
+  return userDataNew;
+}
+
+private String encodeBase64(String input) {
+    String base64UserData = null;
+    try {
+        base64UserData = new String(Base64.encodeBase64(input.getBytes("UTF-8")), "UTF-8");
+    } catch (UnsupportedEncodingException uee) {
+        System.out.println(uee.getMessage());
+    }
+    return base64UserData;
+}

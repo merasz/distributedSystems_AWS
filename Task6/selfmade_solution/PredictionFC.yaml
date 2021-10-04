@@ -1,0 +1,162 @@
+---
+name: "PredictionFC"
+dataIns:
+- name: "input"
+  type: "collection"
+- name: "numberOfThreads"
+  type: "number"
+- name: "numberOfItems"
+  type: "number"
+workflowBody:
+- function:
+    name: "createEC2"
+    type: "Collection"
+    dataIns:
+    - {}
+- function:
+    name: "splitSymbols"
+    type: "Collection"
+    dataIns:
+    - name: "input"
+      type: "collection"
+      source: "PredictionFC/input"
+    - name: "numberOfThreads"
+      type: "number"
+      source: "PredictionFC/numberOfThreads"
+    - name: "numberOfItems"
+      type: "number"
+      source: "PredictionFC/numberOfItems"
+    dataOuts:
+    - name: "splitSymbolsOutput"
+      type: "collection"
+- function:
+    name: "workers"
+    type: "Collection"
+    dataIns:
+    - name: "splitSymbolsOutput"
+      type: "collection"
+      source: "splitSymbols/splitSymbolsOutput"
+    - name: "numberOfThreads"
+      type: "number"
+      source: "PredictionFC/numberOfThreads"
+    - name: "numberOfItems"
+      type: "number"
+      source: "PredictionFC/numberOfItems"
+    dataOuts:
+    - name: "splittedSymbols"
+      type: "collection"
+    - name: "numberOfThreads"
+      type: "number"
+    - {}
+- parallelFor:
+    name: "ParallelFor"
+    dataIns:
+    - name: "splittedSymbols"
+      type: "collection"
+      source: "workers/splittedSymbols"
+      constraints:
+      - name: "distribution"
+        value: "BLOCK(1)"
+    - name: "numberOfItems"
+      type: "number"
+      source: "PredictionFC/numberOfItems"
+    loopCounter:
+      type: "number"
+      to: "PredictionFC/numberOfThreads"
+      step: "1"
+    loopBody:
+    - function:
+        name: "pullData"
+        type: "collection"
+        dataIns:
+        - name: "splittedSymbols"
+          type: "collection"
+          source: "ParallelFor/splittedSymbols"
+        - {}
+        dataOuts:
+        - name: "pulledData"
+          type: "collection"
+        - {}
+    - function:
+        name: "preProcessing"
+        type: "collection"
+        dataIns:
+        - name: "pulledData"
+          type: "collection"
+          source: "pullData/pulledData"
+        - {}
+        dataOuts:
+        - name: "preprocessedData"
+          type: "collection"
+        - {}
+    - function:
+        name: "uploadStockData"
+        type: "Collection"
+        dataIns:
+        - name: "preprocessedData"
+          type: "collection"
+          source: "preProcessing/preprocessedData"
+        - {}
+        dataOuts:
+        - name: "uploadLocation"
+          type: "string"
+        - {}
+    - function:
+        name: "forecastData"
+        type: "Collection"
+        dataIns:
+        - name: "uploadLocation"
+          type: "string"
+          source: "preProcessing/uploadLocation"
+        dataOuts:
+        - name: "locationOfForcastedData"
+          type: "string"
+    - function:
+        name: "pullForcastedData"
+        type: "collection"
+        dataIns:
+        - name: "locationOfForcastedData"
+          type: "string"
+        dataOuts:
+        - name: "forcastedData"
+          type: "collection"
+        constraints:
+        - name: "aggregation"
+          value: "+"
+    - function:
+        name: "plotData"
+        type: "Collection"
+        dataIns:
+        - name: "forcastedData"
+          type: "collection"
+          source: "pullForcastedData/forcastedData"
+        dataOuts:
+        - name: "plottedData"
+          type: "collection"
+        properties:
+        - name: "resource"
+          value: "java:arn"
+    dataOuts:
+    - name: "plottedData"
+      type: "collection"
+      source: "plotData/plottedData"
+      constraints:
+      - name: "aggregation"
+        value: "+"
+- function:
+    name: "mergePlottedData"
+    type: "Collection"
+    dataIns:
+    - name: "plottedData"
+      type: "collection"
+      source: "ParallelFor/plottedData"
+    dataOuts:
+    - name: "plottedDataMerged"
+      type: "collection"
+    properties:
+    - name: "resource"
+      value: "java:arn"
+dataOuts:
+- name: "predictionOutput"
+  type: "collection"
+  source: "mergePlottedData/plottedDataMerged"

@@ -1,0 +1,25 @@
+	Distributed Systems (2020W) - Proseminar
+	Homework 05 - Introduction to Abstract Function
+	Choreography Language - Building Scalable FCs
+	
+Teamwork: Michael Hauser, Markus Köberle, Nils Rambacher
+
+2.1 Description
+	We implemented a workflow where the input to it is just the same input as in homework04
+	The output of the starting point is the input for our fibonacci function
+	The output of the fibonacci function is the input for the endpoint
+	The endpoints output is what is our final result, pretty straight forward
+
+2.2 Description
+	We implemented a workflow where the input is the FibonacciFCparInput.json
+	This input is given to the workers function, which reads the input (N and F)
+	It generates F arrays with the length N/F and the output of the worker function is a map of all arrays
+	Then a parallel section is startet in within F threads are staret, each calculating their own fibonacci numbers
+	The output of every thread is combined and is the output of this parallel section, the result is input for the endpoint
+	The output of the endpoint of this workflow i sthe final result, an array of N fibonacci numbers
+
+2.3 Evaluation task
+
+Running the FC from section 2.1 gave back just the same output as in homework04
+Running the FC from section 2.2 gave us a slightly different output, as the numbers where not in correct order, but have been correctly calculated
+	This is the case because the results are written in whichever order the threads would finnish.

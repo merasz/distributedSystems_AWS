@@ -1,0 +1,7 @@
+Measure the time required for the Tasks 1.-6. of the previous step, as well as the time required for the complete execution of the application.
+
+The time required for the Tasks 1.-6. is 356s, the time required complete execution of the application is 6m7s
+
+Compare the results of the measurement to the time required for the execution of the application from Task 2, in particular w.r.t. the initialization overhead.
+
+Last week the complete application one machine took 6m 33s, but this time it took 6m 7s. By using Docker we improved the initalization process by downloading a smaller java sdk and getting rid of the seperate file uploads.

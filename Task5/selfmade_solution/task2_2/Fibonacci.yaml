@@ -1,0 +1,68 @@
+---
+name: "Fibonacci"
+dataIns:
+- name: "N"
+  type: "number"
+  source: "N"
+- name: "F"
+  type: "number"
+  source: "F"
+workflowBody:
+- function:
+    name: "workers"
+    type: "Collection"
+    dataIns:
+    - name: "N"
+      type: "number"
+      source: "Fibonacci/N"
+    - name: "F"
+      type: "number"
+      source: "Fibonacci/F"
+    dataOuts:
+    - name: "output"
+      type: "collection"
+    properties:
+    - name: "resource"
+      value: "java:arn:aws:lambda:us-east-1:935857016589:function:LambdaWorkers"
+- parallelFor:
+    name: "ParallelFor"
+    dataIns:
+    - name: "input"
+      type: "collection"
+      source: "workers/output"
+      constraints:
+      - name: "distribution"
+        value: "BLOCK(1)"
+    loopCounter:
+      type: "number"
+      from: "0"
+      to: "Fibonacci/F"
+      step: "1"
+    loopBody:
+    - function:
+        name: "LambdaFibonacci"
+        type: "LambdaFibonacciType"
+        dataIns:
+        - name: "input"
+          type: "collection"
+          source: "ParallelFor/input"
+        dataOuts:
+        - name: "output"
+          type: "collection"
+        properties:
+        - name: "resource"
+          value: "java:arn:aws:lambda:us-east-1:935857016589:function:LambdaFibonacci"
+    dataOuts:
+    - name: "output"
+      type: "collection"
+      source: "LambdaFibonacci/output"
+      constraints:
+      - name: "aggregation"
+        value: "+"
+dataOuts:
+- name: "output"
+  type: "collection"
+  source: "ParallelFor/output"
+  constraints:
+  - name: "aggregate"
+    value: "+"

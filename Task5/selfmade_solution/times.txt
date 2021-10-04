@@ -1,0 +1,34 @@
+Parallel N 35	F35		Seq
+1.~4000ms coldstart		1.~23429ms
+2.~2800ms			2.~20076ms
+3.~2600ms			3.~23004ms
+4.~2400ms			4.~19910ms.
+5.~3100ms			5.~20019ms.
+AVG: 2980ms			AVG: 21287ms
+
+Mit Parallel For Tasks erreicht man einen speedup von 7, N35
+____________________________________________
+Parallel N 40	F35		Seq
+1.~79871ms.			1.~206653ms.
+2.~81760ms.			2.~208039ms.
+3.~85219ms.			3.~208411ms.
+4.~86915ms			4.~205572ms.
+5.~69836ms.			5.~206180ms.
+AVG:80720			AVG: 206971
+
+Mit Parallel For Tasks erreicht man einen speedup von 2.5, N35
+________________________
+____________________________________________
+
+
+
+
+____________________________________________
+Parallel N 40	F40		Seq
+1.~83192ms.			1.~206653ms.
+2.~80099ms.			2.~208039ms
+
+
+
+
+With n45 it times out, takes more than 15 minutes to calc
