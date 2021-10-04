@@ -9,3 +9,7 @@ run serverless functions
 lambda
 s3
 get to known redis cluster
+
+
+https://github.com/sashkoristov/PSDS2020W
+https://github.com/uibk-dps-teaching/proSemDistrSysWS2021
